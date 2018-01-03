@@ -1,0 +1,132 @@
+>>> Problem:
+
+|E22EA6E14BAC49F4990214F6874EB1B30|2012 10 22 17:48:15.302|-0700|Error| |==|E| |jobserver_MASTERSHAKE.AdaptiveJobServer_ReplicationSchedulingService_CHILD0|11840|  30|ORBacus:ThreadPerRequest:Dispatcher| |880|0|4|0|CMC.WebApp|COMMANDCOM-LCM:1124:39.41:1|CMS.runJobs|localhost:2068:6468.568:1|.run|COMMANDCOM-LCM:11840:30.10:1|CqqlskyeAkdTunou5m8bHLE27|||||||||com.businessobjects.js.child.federation.FederationClient||replicate: WS error: org.apache.axiom.ext.io.StreamCopyException: Error reading from source
+|E22EA6E14BAC49F4990214F6874EB1B31|2012 10 22 17:48:15.365|-0700|Error| |==|E| |jobserver_MASTERSHAKE.AdaptiveJobServer_ReplicationSchedulingService_CHILD0|11840|  30|ORBacus:ThreadPerRequest:Dispatcher| |888|0|4|0|CMC.WebApp|COMMANDCOM-LCM:1124:39.41:1|CMS.runJobs|localhost:2068:6468.568:1|.run|COMMANDCOM-LCM:11840:30.10:1|CqqlskyeAkdTunou5m8bHLE27|||||||||com.businessobjects.js.child.federation.ReplicationProcessingSubsystem||run: caught exception
+com.businessobjects.framework.federation.exception.ReplicationException$CommunicationException
+cause:org.apache.axiom.om.OMException: org.apache.axiom.ext.io.StreamCopyException: Error reading from source
+detail:null org.apache.axiom.ext.io.StreamCopyException: Error reading from source
+	at com.businessobjects.framework.federation.slave.internal.FederationClient.replicate(FederationClient.java:462)
+	at com.businessobjects.framework.federation.slave.internal.FederationClient.exchangePackages(FederationClient.java:213)
+	at com.businessobjects.framework.federation.slave.FederationSlave.sendRequest(FederationSlave.java:440)
+	at com.businessobjects.framework.federation.slave.FederationSlave.replicate(FederationSlave.java:188)
+	at com.businessobjects.js.processingsubsystem.procreplication.ReplicationProcessingSubsystem.run(ReplicationProcessingSubsystem.java:133)
+	at com.businessobjects.js.child.IJobImpl.run(IJobImpl.java:128)
+	at com.crystaldecisions.enterprise.ocaframework.idl.OSCA.OSCAip.IJobPOA._OB_op_run(IJobPOA.java:130)
+	at com.crystaldecisions.enterprise.ocaframework.idl.OSCA.OSCAip.IJobPOA._invoke(IJobPOA.java:91)
+	at com.crystaldecisions.thirdparty.com.ooc.OBPortableServer.ServantDispatcher.dispatch(ServantDispatcher.java:234)
+	at com.crystaldecisions.thirdparty.com.ooc.OBPortableServer.POA_impl._do_OB_dispatch(POA_impl.java:1980)
+	at com.crystaldecisions.thirdparty.com.ooc.OBPortableServer.POA_impl._OB_dispatch(POA_impl.java:1916)
+	at com.crystaldecisions.thirdparty.com.ooc.OB.DispatchRequest_impl.invoke(DispatchRequest_impl.java:122)
+	at com.crystaldecisions.thirdparty.com.ooc.OB.DispatchThreadPerRequest_impl$Dispatcher.run(DispatchStrategyFactory_impl.java:87)
+Caused by: org.apache.axiom.om.OMException: org.apache.axiom.ext.io.StreamCopyException: Error reading from source
+	at org.apache.axiom.attachments.PartContentFactory.createPartContent(PartContentFactory.java:153)
+	at org.apache.axiom.attachments.PartImpl.fetch(PartImpl.java:176)
+	at org.apache.axiom.attachments.PartImpl.getContent(PartImpl.java:149)
+	at org.apache.axiom.attachments.PartImpl.getInputStream(PartImpl.java:224)
+	at org.apache.axiom.attachments.PartDataSource.getInputStream(PartDataSource.java:44)
+	at javax.activation.DataHandler.getInputStream(DataHandler.java:223)
+	at com.businessobjects.dsws.federator.Federator.createOutputFiles(Federator.java:393)
+	at com.businessobjects.dsws.federator.Federator.replicateMTOM(Federator.java:347)
+	at com.businessobjects.framework.federation.slave.internal.FederationClient.replicate(FederationClient.java:423)
+	... 12 more
+Caused by: org.apache.axiom.ext.io.StreamCopyException: Error reading from source
+	at org.apache.axiom.attachments.utils.BAAOutputStream.readFrom(BAAOutputStream.java:114)
+	at org.apache.axiom.attachments.impl.BufferUtils.inputStream2OutputStream(BufferUtils.java:107)
+	at org.apache.axiom.attachments.PartContentFactory.createPartContent(PartContentFactory.java:125)
+	... 20 more
+Caused by: java.io.IOException: Attempted read on closed stream.
+	at org.apache.commons.httpclient.AutoCloseInputStream.isReadAllowed(AutoCloseInputStream.java:183)
+	at org.apache.commons.httpclient.AutoCloseInputStream.read(AutoCloseInputStream.java:107)
+	at java.io.FilterInputStream.read(FilterInputStream.java:126)
+	at org.apache.axiom.om.util.DetachableInputStream.read(DetachableInputStream.java:147)
+	at org.apache.james.mime4j.io.BufferedLineReaderInputStream.fillBuffer(BufferedLineReaderInputStream.java:111)
+	at org.apache.james.mime4j.io.MimeBoundaryInputStream.fillBuffer(MimeBoundaryInputStream.java:223)
+	at org.apache.james.mime4j.io.MimeBoundaryInputStream.read(MimeBoundaryInputStream.java:157)
+	at org.apache.james.mime4j.io.BufferedLineReaderInputStream.fillBuffer(BufferedLineReaderInputStream.java:111)
+	at org.apache.james.mime4j.io.BufferedLineReaderInputStream.read(BufferedLineReaderInputStream.java:158)
+	at org.apache.james.mime4j.io.LineReaderInputStreamAdaptor.read(LineReaderInputStreamAdaptor.java:67)
+	at org.apache.axiom.attachments.utils.BAAOutputStream.readFrom(BAAOutputStream.java:112)
+	... 22 more
+
+
+>>> Solution:
+
+[PATCH] AXIS2-2931 & AXIS2-3478: Release the HTTP connection safely
+
+* The patch has been already applied in Axis2 1.3 and 1.4, but not for 1.6.2.
+
+>>> Links:
+
+https://issues.apache.org/jira/browse/AXIS2-2931
+https://issues.apache.org/jira/browse/AXIS2-3478
+https://issues.apache.org/jira/browse/AXIS2-5304
+https://issues.apache.org/jira/browse/HTTPCLIENT-910 **(might be related as well)
+
+>>> Details:
+
+From: Alexis Midon <midon@apache.org>
+Date: Wed, 25 Feb 2009 17:05:16 -0800
+Subject: [PATCH] AXIS2-2931 & AXIS2-3478: Release the HTTP connection safely
+
+---
+ .../axis2/transport/http/AbstractHTTPSender.java   |    4 +++-
+ .../apache/axis2/transport/http/HTTPConstants.java |    1 +
+ .../apache/axis2/transport/http/HTTPSender.java    |    8 +++++---
+ 3 files changed, 9 insertions(+), 4 deletions(-)
+
+diff --git a/modules/kernel/src/org/apache/axis2/transport/http/AbstractHTTPSender.java b/modules/kernel/src/org/apache/axis2/transport/http/AbstractHTTPSender.java
+index e53fe43..adfc9a4 100644
+--- a/modules/kernel/src/org/apache/axis2/transport/http/AbstractHTTPSender.java
++++ b/modules/kernel/src/org/apache/axis2/transport/http/AbstractHTTPSender.java
+@@ -42,6 +42,7 @@ import org.apache.commons.logging.LogFactory;
+ import javax.xml.namespace.QName;
+ import java.io.IOException;
+ import java.io.InputStream;
++import java.io.ByteArrayInputStream;
+ import java.net.URL;
+ import java.util.ArrayList;
+ import java.util.HashMap;
+@@ -196,7 +197,8 @@ public abstract class AbstractHTTPSender {
+             throws IOException {
+         obtainHTTPHeaderInformation(httpMethod, msgContext);
+ 
+-        InputStream in = httpMethod.getResponseBodyAsStream();
++        // AXIS2-2931 & AXIS2-3478: Read the full ResponseBody right now, so we can release the HTTP connection
++        InputStream in = new ByteArrayInputStream(httpMethod.getResponseBody());
+         if (in == null) {
+             throw new AxisFault(Messages.getMessage("canNotBeNull", "InputStream"));
+         }
+diff --git a/modules/kernel/src/org/apache/axis2/transport/http/HTTPConstants.java b/modules/kernel/src/org/apache/axis2/transport/http/HTTPConstants.java
+index 29b0bc0..19a6cf2 100644
+--- a/modules/kernel/src/org/apache/axis2/transport/http/HTTPConstants.java
++++ b/modules/kernel/src/org/apache/axis2/transport/http/HTTPConstants.java
+@@ -497,6 +497,7 @@ public class HTTPConstants {
+ 
+     /*
+      * Automatically release connections.
++     * @deprecated HTTP Connections are always released for now on
+      */
+     public static final String AUTO_RELEASE_CONNECTION = "AutoReleaseConnection" ;
+ 
+diff --git a/modules/kernel/src/org/apache/axis2/transport/http/HTTPSender.java b/modules/kernel/src/org/apache/axis2/transport/http/HTTPSender.java
+index ae52e07..55b15a2 100644
+--- a/modules/kernel/src/org/apache/axis2/transport/http/HTTPSender.java
++++ b/modules/kernel/src/org/apache/axis2/transport/http/HTTPSender.java
+@@ -112,9 +112,11 @@ public class HTTPSender extends AbstractHTTPSender {
+     }
+ 
+     private void cleanup(MessageContext msgContext, HttpMethod method) {
+-        if (msgContext.isPropertyTrue(HTTPConstants.AUTO_RELEASE_CONNECTION)) {
+-            method.releaseConnection();
+-        }
++        // AXIS2-2931 & AXIS2-3478:
++        // Always release the HTTP connection
++        // We can do it safely, the body has been read and stored in the msgContext already
++        // see #processResponse in the super class 
++         method.releaseConnection();
+     }
+ 
+     /**
+-- 
+1.5.6.3
+
